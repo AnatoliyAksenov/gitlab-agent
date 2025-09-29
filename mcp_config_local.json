@@ -1,0 +1,6 @@
+{
+    "db_tools": {
+            "url": "http://localhost:8001/mcp",
+            "transport": "streamable_http"
+        }
+}
