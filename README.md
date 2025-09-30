@@ -2,7 +2,7 @@
 
 LLM агент по созданию пайплайнов по загрузке данных (помощник дата инженера)
 
-## Архитектура агента
+## Архитектура решения
 
 Агент состоит из двух основных модулей:
 - LLM Чат (пользовательский интерфейс)
@@ -24,6 +24,7 @@ LLM агент по созданию пайплайнов по загрузке 
 - MCP Сервер: https://github.com/AnatoliyAksenov/chat-app-mcp
 - LLM Chat backend: https://github.com/AnatoliyAksenov/chat-app-backend
 - LLM Chat frontend: https://github.com/AnatoliyAksenov/chat-app-frontend
+- Gitlab Agent: https://github.com/AnatoliyAksenov/gitlab-agent
 
 
-Также, мы подготовили развернутый стенд
+Также, мы подготовили развернутый стенд для тестирования нашего решения

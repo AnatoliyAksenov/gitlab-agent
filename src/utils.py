@@ -220,7 +220,7 @@ async def generate_task_file(
     
     chain = prompt | model | parser
 
-    return await chain.ainvoke({"filename": file_name, "task_requirements": task_requirements, "task_template": task_template})
+    return await chain.ainvoke({"file_name": file_name, "task_requirements": task_requirements, "task_template": task_template})
 
 
 @tool
