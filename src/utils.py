@@ -23,7 +23,7 @@ from langchain_mcp_adapters.client import MultiServerMCPClient
 from src.model import AppConfig
 from src.gitwork import GitWorker
 from src.prompts import main_prompt
-from src.prompts import dag_prompt, task_prompt, ddl_prompt, doc_prompt
+from src.prompts import dag_prompt, task_prompt, ddl_prompt, doc_prompt, dq_prompt
 
 from langfuse import Langfuse, get_client
 from langfuse.langchain import CallbackHandler
@@ -93,7 +93,8 @@ class LLMAgent():
             [
                 generate_task_file, generate_dag_file, 
                 generate_ddl_file, generate_doc_file, 
-                commit_file, create_branch
+                commit_file, create_branch,
+                generate_dq_task_file
             ]
         )
 
@@ -204,7 +205,7 @@ parser = PydanticOutputParser(pydantic_object=FileOutput)
 @tool
 async def generate_task_file(
     file_name:str = Field(..., description="Apache Spark application file name"),
-    task_requirements:str = Field(..., description="Task requirements to generate file"),
+    task_requirements:str = Field(..., description="Task requirements to generate file, source schemas, data structures, transformation requirements, target table name, environment variables, config parameters"),
     task_template:str = Field(..., description="Proper pyspark template and usefull snippets")
     ) -> FileOutput:
     """
@@ -224,11 +225,35 @@ async def generate_task_file(
 
 
 @tool
+async def generate_dq_task_file(
+    file_name:str = Field(..., description="Apache Spark application file name"),
+    task_requirements:str = Field(..., description="Task requirements to generate file"),
+    dq_task_template:str = Field(..., description="Proper pyspark application template and usefull snippets, target table structure, required environment variables"),
+    generated_task:str = Field(..., description="Code of generated etl task.")
+    ) -> FileOutput:
+    """
+    This tool is for generating Apache Spark applications for data quality check tasks
+    """
+    prompt = PromptTemplate(
+        template=dq_prompt,
+        input_variables=['file_name', 'task_requirements', 'task_template', "generated_task"],
+        partial_variables={"format_instructions": parser.get_format_instructions()},
+        )
+    
+    model = await get_model()
+    
+    chain = prompt | model | parser
+
+    return await chain.ainvoke({"file_name": file_name, "task_requirements": task_requirements, "dq_task_template": dq_task_template, "generated_task": generated_task})
+
+
+
+@tool
 async def generate_dag_file(
     dag_id:str = Field(..., description="Airflow DAG id and DAG file name."),
     dag_requirements:str = Field("Airflow DAG requirements specification"), 
     dag_template:str = Field("Airflow DAG template to provide same code generation"),
-    generation_instructions:str = Field("Generate instructions")                     
+    generation_instructions:str = Field("Generation instructions, source and destination sources metadata, ")                     
     ) -> FileOutput:
     """
     This tool is for generating Airflow DAG file based on requirements and generation instructions.

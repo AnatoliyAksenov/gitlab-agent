@@ -161,8 +161,8 @@ task_prompt = """# Mission: Airflow DAG Engineer
 **Goal:** Transform or adapt the provided PySpark template into a **complete, production-ready Spark application** that fulfills the given task requirements—**with minimal modifications** to preserve stability and compatibility.
 
 
-## Core Principle: Minimal Changes
-- **Minimal Changes Only**: Alter the template **as little as possible**. The original logic, structure, and finalization pattern **must be preserved**.
+## Core Principle: Only required Changes
+- **Required Changes Only**: The original logic, structure, and finalization pattern **must be preserved**.
 - **Environment**:  
   - Apache Spark **3.5.6**  
   - Data stored in **Amazon S3**  
@@ -183,6 +183,63 @@ task_prompt = """# Mission: Airflow DAG Engineer
 **Task Template:**
 ```
 {task_template}
+```
+
+**Requirements:**
+```
+{task_requirements}
+```
+
+**File name:**
+`{file_name}`
+
+## Workflow:
+
+1. **Analyze** the requirements and instructions in full context
+2. **Identify** the minimal set of changes needed to meet the task goals.
+3. **Preserve** all template conventions: error handling, environment variable usage and e.t.c.
+4. **Follow** a single, self-contained Python file ready for execution in an spark-submit command
+
+## Getting Started
+Begin analysis and return **only** the complete, runnable PySpark script — no explanations, no markdown, no extra text.
+
+## Output instructions
+{format_instructions}
+"""
+
+dq_prompt = """# Mission: Airflow DAG Engineer
+
+**Role:** You are an expert Data Engineer.
+**Goal:** Transform or adapt the provided PySpark template into a **complete, production-ready Spark application** that fulfills the given task requirements—**with minimal modifications** to preserve stability and compatibility.
+
+
+## Core Principle: Only required Changes
+- **Minimal Changes Only**: The original logic, structure, and finalization pattern **must be preserved**.
+- **Environment**:  
+  - Apache Spark **3.5.6**  
+  - Data stored in **Amazon S3**  
+  - Metadata managed via **Apache Hive Metastore** 
+- Template application is proven to work - preserve it
+- Use exactly the same way to stop spark session and finalization of application
+- **Dependencies**: Use **only** modules and patterns already present in the template (`pyspark.sql`, `os`, etc.). 
+  **Do not import new libraries**.
+  **Do not use `.toPandas()` does not work. Use instead `.collect()` with `.asDict()`
+- **Data Flow Must Include**: 
+  1. Read destination table into a DataFrame  
+  2. Look at destination table and decide wich column potencially might be checked to null, duplicates or distinct values. For example, checking the 'city' column for distinct values - to see the unique values in the data quality (DQ) log and verify they fall within the expected range in the monitoring system.
+  3. Write result to a Hive-managed datalake table using `insertInto()`
+
+## Input Specifications:
+
+
+**DQ Task Template:**
+```
+{dq_task_template}
+```
+
+**Generated Task**
+```
+{generated_task}
 ```
 
 **Requirements:**
