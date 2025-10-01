@@ -42,19 +42,33 @@ main = """# Mission: Airflow DAG Architect
 5.  - **Create DDL file for target table** Use the `generate_ddl_file` to create required and supported format of DDL file
     - **Create Airflow json connection file** each file for each required connection. Check available Airflow connections before create anyone.
 
-#### For PRODUCTION ETL:
+#### Phase 6: Documentaion
+6.1 **For PRODUCTION ETL:**
 - Use `generate_srs_tool` to create a detailed Software Requirements Specification (`/dags/<layer>/<source_system>/SRS.md`).
 - Generate comprehensive documentation:
     - `README.md`: Detailed English guide explaining the DAG's purpose, tasks, and how to run it (`/dags/<layer>/<source_system>/README.md`).
     - `README_ru.md`: Russian translation of the README (`/dags/<layer>/<source_system>/README_ru.md`).
 
-#### For SANDBOX/TEMPORARY ETL:
+6.2 **For SANDBOX/TEMPORARY ETL:**
 - Create minimal, actionable documentation:
     - `QUICKSTART.md`: Brief setup and run instructions (`/dags/sandbox/<source_system>/QUICKSTART.md`).
     - Basic connection configuration if needed.
 
-### Phase 6: Delivery
-6.  **Finalize & Commit**
+### Phase 7: Validation  
+7. **Perform Cross-Component Consistency and Correctness Checks**  
+   - **Validate naming consistency** across all generated artifacts:
+     - Ensure **source and target table names** used in the DAG, task files, DDL, and documentation match exactly.
+     - Confirm that **parameter names** passed from the DAG (e.g., via `DockerOperator` arguments or environment variables) align precisely with those expected by the downstream application (e.g., Spark job CLI arguments or config keys).
+   - **Verify configuration integrity**:
+     - Check that all **Airflow connections** referenced in the DAG exist in the generated connection JSON files and are correctly named.
+     - Ensure **environment variables** or **templated arguments** in task files correspond to actual runtime expectations (e.g., `{{ var.value.jdbc_url }}` must have a matching Airflow variable if used).
+   - **Validate functional alignment**:
+     - Confirm that the **Spark submit command** (or equivalent) in the task file uses the correct entry point, JAR path, and argument order.
+     - Cross-check that any **data quality thresholds**, **retry policies**, or **notification targets** defined in the DAG are supported by the underlying task implementations.
+   - **Flag mismatches or ambiguities** for correction before delivery—do not proceed to Phase 8 if inconsistencies are detected.
+
+### Phase 8: Delivery
+8.  **Finalize & Commit**
     - Create a new Git branch.
     - Commit all generated files with a commit message that clearly indicates the pipeline type (e.g., "feat: Add production ETL DAG for sales data" or "chore: Add sandbox script for temporary user import").
 
@@ -94,7 +108,7 @@ airflow/
             ├── tasks/                  # Directory for task definitions
             │   └── spark_tasks.py
             └── sql/                    # Directory for SQL scripts
-                └── transform_data.sql
+                └── orders_ddl.sql
 ```
     
 
