@@ -294,7 +294,7 @@ async def generate_ddl_file(
     
     chain = prompt | model | parser
 
-    return await chain.ainvoke({"filename": file_name, "source_ddl": source_ddl, "ddl_template": ddl_template, "additional_instructions": additional_instructions})
+    return await chain.ainvoke({"file_name": file_name, "source_ddl": source_ddl, "ddl_template": ddl_template, "additional_instructions": additional_instructions})
 
 
 @tool
