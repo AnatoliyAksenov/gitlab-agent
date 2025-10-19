@@ -25,6 +25,7 @@ LLM агент по созданию пайплайнов по загрузке 
 - LLM Chat backend: https://github.com/AnatoliyAksenov/chat-app-backend
 - LLM Chat frontend: https://github.com/AnatoliyAksenov/chat-app-frontend
 - Gitlab Agent: https://github.com/AnatoliyAksenov/gitlab-agent
+- Infrastructure: https://github.com/AnatoliyAksenov/it-brew-infra
 
 
 Также, мы подготовили развернутый стенд для тестирования нашего решения
